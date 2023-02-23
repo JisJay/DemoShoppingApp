@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Just Shop</string>
+    <string name="title">Just Shop!</string>
+    <string name="price">$ %.2f</string>
+    <string name="category">Category: %s</string>
+    <string name="favourite">Favourite</string>
+    <string name="rating">Rating: %.1f out of 5</string>
+    <string name="rating_count">%d ratings</string>
+</resources>
