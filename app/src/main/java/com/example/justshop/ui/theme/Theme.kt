@@ -12,7 +12,7 @@ private val DarkColorPalette = darkColors(
     secondary = md_theme_dark_secondary,
     surface = md_theme_dark_surface,
     onSurface = md_theme_dark_onSurface,
-    onPrimary = md_theme_dark_onPrimary
+    onPrimary =md_theme_dark_onPrimary
 )
 
 private val LightColorPalette = lightColors(
@@ -21,7 +21,7 @@ private val LightColorPalette = lightColors(
     secondary = md_theme_light_secondary,
     surface = md_theme_light_surface,
     onSurface = md_theme_light_onSurface,
-    onPrimary = md_theme_light_onPrimary
+    onPrimary =md_theme_light_onPrimary
 )
 
 

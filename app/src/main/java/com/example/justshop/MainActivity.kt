@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.justshop.ui.JustShopScreen
+import com.example.justshop.ui.JustShopTopBar
 import com.example.justshop.ui.theme.JustShopTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,9 +21,9 @@ class MainActivity : ComponentActivity() {
             JustShopTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
                 ) {
-                    //Launches the screen
                     JustShopScreen()
                 }
             }
@@ -31,10 +32,10 @@ class MainActivity : ComponentActivity() {
 }
 
 
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     JustShopTheme {
-        JustShopScreen()
     }
 }

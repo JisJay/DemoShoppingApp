@@ -9,13 +9,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.justshop.R
 
-
+/**
+ * Imported new Font MerriWeather
+ */
 val MerriWeatherScript = FontFamily(
     Font(R.font.merriweather_regular),
     Font(R.font.merriweather_bold, FontWeight.Bold),
     Font(R.font.merriweather_bolditalic, FontWeight.Bold, FontStyle.Italic)
 )
-
 // Set of Material typography styles to start with
 val Typography = Typography(
     h1 = TextStyle(
@@ -56,4 +57,5 @@ val Typography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 12.sp
     )
+
 )

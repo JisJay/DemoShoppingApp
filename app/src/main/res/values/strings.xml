@@ -3,7 +3,11 @@
     <string name="title">Just Shop!</string>
     <string name="price">$ %.2f</string>
     <string name="category">Category: %s</string>
-    <string name="favourite">Favourite</string>
+    <string name="favourite">Favourites</string>
+    <string name="my_favourites">My Favourites</string>
+    <string name="loading">Loading</string>
+    <string name="retry">Retry</string>
+    <string name="loading_failed">Failed to load items now..please try after some time..</string>
     <string name="rating">Rating: %.1f out of 5</string>
     <string name="rating_count">%d ratings</string>
 </resources>

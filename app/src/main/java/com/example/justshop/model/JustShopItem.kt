@@ -1,35 +1,35 @@
 package com.example.justshop.model
 
 import androidx.annotation.DrawableRes
-
-/*
- * Data class to handle the ratings
- * rate - rating value
- * count - number of feedback
+import androidx.annotation.StringRes
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+/**
+ * This data class defines a Rating
  */
+
+@Serializable
 data class Rating(
-    var rate : Double,
-    var count : Int
+    @SerialName(value = "rate")
+    val rate : Double,
+    @SerialName(value = "count")
+    val count : Int
 )
 
-/*
- * Data class to handle each Item
- * id - unique id of the item
- * title - title
- * description - details
- * price - cost of the product
- * category - which category
- * imageId - resource for image
- * rating - rating details
- */
+@Serializable
 data class JustShopItem(
-    var id : Int,
-    var title : String,
-    var description : String,
-    var price : Double,
-    var category : String,
-    @DrawableRes var imageId : Int,
-    var rating : Rating
+    val id: Int,
+    @SerialName(value = "title")
+    val title : String,
+    @SerialName(value = "price")
+    val price : Double,
+    @SerialName(value = "description")
+    val description : String,
+    @SerialName(value = "category")
+    val category : String,
+    @SerialName(value = "image")
+    val image : String,
+    @SerialName(value = "rating")
+    val rating : Rating
 )
-
 
