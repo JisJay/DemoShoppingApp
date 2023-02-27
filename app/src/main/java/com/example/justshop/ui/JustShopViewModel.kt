@@ -1,9 +1,6 @@
 package com.example.justshop.ui
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -22,38 +19,44 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-class JustShopViewModel(private val justShopItemsRepository: JustShopItemsRepository) : ViewModel(){
+class JustShopViewModel(private val justShopItemsRepository: JustShopItemsRepository) :
+    ViewModel() {
 
     val TAG = "JustShopViewModel"
 
     /**
-     * Cupcake state for this order
+     * StateFlow for JustShopUI State
      */
     private val _uiState = MutableStateFlow(JustShopUiState())
     val uiState: StateFlow<JustShopUiState> = _uiState.asStateFlow()
 
-    init{
+    init {
         initialize()
     }
 
     /**
      * Tracking the favourite ids list here for better performance
      */
-    private lateinit var favouritesIds : List<Int>
+    private lateinit var favouritesIds: List<Int>
+
     /*
      * Load the items initially
      */
-    private fun initialize(){
-        favouritesIds = _uiState.value.favourites.map{
+    private fun initialize() {
+        favouritesIds = _uiState.value.favourites.map {
             it.id
         }
         updateViewStatus()
         loadItems()
     }
 
+    /**
+     * Just to show the previously loaded items in the home view
+     */
     fun showShopItems() {
         updateViewStatus(isLoading = false, isError = false, isFavouriteScreen = false)
     }
+
     /**
      * Load Favourites
      */
@@ -79,34 +82,37 @@ class JustShopViewModel(private val justShopItemsRepository: JustShopItemsReposi
             } catch (e: Exception) {
                 Log.e(TAG, "Exception::: $e")
                 updateViewStatus(isError = true)
-        }
+            }
         }
     }
 
 
-     private fun updateShoppingList(listItems : List<JustShopItem>){
+    /**
+     * Load the shopping list to the UI State
+     */
+    private fun updateShoppingList(listItems: List<JustShopItem>) {
         _uiState.update { currentState ->
             currentState.copy(
-                isLoading = false,
-                isError = false,
-                justShopItemsList = listItems
+                isLoading = false, isError = false, justShopItemsList = listItems
             )
         }
     }
 
-    private fun updateViewStatus(isLoading : Boolean = false,
-                                 isError: Boolean = false,
-                                 isFavouriteScreen : Boolean = false){
+    private fun updateViewStatus(
+        isLoading: Boolean = false, isError: Boolean = false, isFavouriteScreen: Boolean = false
+    ) {
         _uiState.update { currentState ->
             currentState.copy(
-                isLoading = isLoading,
-                isError = isError,
-                isFavouriteScreen = isFavouriteScreen
+                isLoading = isLoading, isError = isError, isFavouriteScreen = isFavouriteScreen
             )
         }
     }
 
-    private fun updateFavourites(favourites : List<JustShopItem>){
+
+    /**
+     * Copy Favouriteslist to UI State
+     */
+    private fun updateFavourites(favourites: List<JustShopItem>) {
         favouritesIds = favourites.map {
             it.id
         }
@@ -118,9 +124,12 @@ class JustShopViewModel(private val justShopItemsRepository: JustShopItemsReposi
     }
 
 
+    /**
+     * The method which UI calls to update the favourite state of an item
+     */
     fun updateFavorites(justShopItem: JustShopItem) {
-        var favourites = _uiState.value.favourites.toMutableList()
-        if(isFavourite(justShopItem.id)) {
+        val favourites = _uiState.value.favourites.toMutableList()
+        if (isFavourite(justShopItem.id)) {
             favourites.remove(justShopItem)
         } else {
             favourites.add(justShopItem)
@@ -128,18 +137,22 @@ class JustShopViewModel(private val justShopItemsRepository: JustShopItemsReposi
         updateFavourites(favourites)
     }
 
-    fun isFavourite(justShopItem : Int) : Boolean{
+
+    /**
+     * Check whether favourite or not
+     */
+    fun isFavourite(justShopItem: Int): Boolean {
         return favouritesIds.contains(justShopItem)
     }
 
     /**
-     * Factory for [MarsViewModel] that takes [MarsPhotosRepository] as a dependency
+     * Factory for [JustShopViewModel] that takes [JustShopPhotosRepository] as a dependency
      */
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY]
-                if(app==null) {
+                if (app == null) {
                     JustShopViewModel(justShopItemsRepository = DefaultAppContainer().justShopItemsRepository)
                 } else {
                     val application = (app as JustShopApplication)

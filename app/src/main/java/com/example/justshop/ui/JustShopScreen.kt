@@ -41,13 +41,11 @@ fun JustShopScreen(modifier: Modifier = Modifier) {
     val justShopViewModel: JustShopViewModel = viewModel(factory = JustShopViewModel.Factory)
     val uiState by justShopViewModel.uiState.collectAsState()
     Scaffold(topBar = {
-        JustShopTopBar(isFavouriteScreen = uiState.isFavouriteScreen,
-            onFavouriteClicked = {
-                justShopViewModel.loadFavourites()
-            },
-            onFavouriteUnClicked = {
-                justShopViewModel.showShopItems()
-            })
+        JustShopTopBar(isFavouriteScreen = uiState.isFavouriteScreen, onFavouriteClicked = {
+            justShopViewModel.loadFavourites()
+        }, onFavouriteUnClicked = {
+            justShopViewModel.showShopItems()
+        })
     }) { contentPadding ->
         Surface(
             modifier = Modifier
@@ -82,7 +80,7 @@ fun HomeScreen(
 
 
 /**
- * The home screen displaying error message
+ * The home screen displaying the list of items
  */
 @Composable
 fun JustShopItemListScreen(
@@ -140,7 +138,9 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
     }
 }
 
-
+/**
+ * Displaying the Topbar
+ */
 @Composable
 fun JustShopTopBar(
     modifier: Modifier = Modifier,
@@ -185,6 +185,9 @@ fun JustShopTopBar(
     }
 }
 
+/**
+ * UI for each Item
+ */
 @Composable
 fun JustShopItemView(
     modifier: Modifier = Modifier,
@@ -233,6 +236,9 @@ fun JustShopItemView(
     }
 }
 
+/**
+ * UI to show the title, price & fav icon
+ */
 @Composable
 fun DetailsSnapShot(
     justShopItem: JustShopItem,
@@ -274,7 +280,9 @@ fun DetailsSnapShot(
 
 }
 
-
+/**
+ * UI to show the description and ratings
+ */
 @Composable
 fun Details(justShopItem: JustShopItem) {
     Column(

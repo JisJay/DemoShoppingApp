@@ -10,7 +10,7 @@ import retrofit2.Retrofit
  * Dependency Injection Container at application level
  */
 interface AppContainer {
-    val justShopItemsRepository :JustShopItemsRepository
+    val justShopItemsRepository: JustShopItemsRepository
 }
 
 /**
@@ -27,21 +27,20 @@ class DefaultAppContainer : AppContainer {
      */
     private val retrofit: Retrofit = Retrofit.Builder()
         .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
-        .baseUrl(BASE_URL)
-        .build()
+        .baseUrl(BASE_URL).build()
 
 
     /**
      * Retrofit service object for creating API calls
      */
-    private val retrofitService : ShopItemsApi by lazy {
+    private val retrofitService: ShopItemsApi by lazy {
         retrofit.create(ShopItemsApi::class.java)
     }
 
     /**
      * DI implentation for shop items repository
      */
-    override val justShopItemsRepository :JustShopItemsRepository by lazy {
+    override val justShopItemsRepository: JustShopItemsRepository by lazy {
         NetworkJustShopItemsRepository(retrofitService)
     }
 

@@ -8,7 +8,7 @@ import retrofit2.http.GET
  */
 interface ShopItemsApi {
 
- @GET("products?limit=10")
- suspend fun getShopItems() : List<JustShopItem>
+    @GET("products?limit=10")
+    suspend fun getShopItems(): List<JustShopItem>
 
 }
