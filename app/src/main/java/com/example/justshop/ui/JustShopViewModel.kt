@@ -1,5 +1,6 @@
 package com.example.justshop.ui
 
+import LocalDbItemsRepository
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -9,18 +10,20 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.justshop.JustShopApplication
 import com.example.justshop.data.DefaultAppContainer
+import com.example.justshop.data.FavItem
 import com.example.justshop.data.JustShopItemsRepository
 import com.example.justshop.model.JustShopItem
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.example.justshop.model.toFavItem
+import com.example.justshop.model.toJustShopItem
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-class JustShopViewModel(private val justShopItemsRepository: JustShopItemsRepository) :
-    ViewModel() {
+class JustShopViewModel(
+    private val justShopItemsRepository: JustShopItemsRepository,
+    private val localFavItemsRepository: LocalDbItemsRepository
+) : ViewModel() {
 
     val TAG = "JustShopViewModel"
 
@@ -48,6 +51,7 @@ class JustShopViewModel(private val justShopItemsRepository: JustShopItemsReposi
         }
         updateViewStatus()
         loadItems()
+
     }
 
     /**
@@ -62,6 +66,37 @@ class JustShopViewModel(private val justShopItemsRepository: JustShopItemsReposi
      */
     fun loadFavourites() {
         updateViewStatus(isFavouriteScreen = true)
+    }
+
+    /**
+     * Initial load from local db
+     * after loading the items from network server
+     */
+    private fun loadFavItemsFromDB() {
+        viewModelScope.launch {
+            try {
+                val favItemsFlow = localFavItemsRepository.getAllItems()
+                //Storing locally the fav items
+                favouritesIds = favItemsFlow.map {
+                    it.id
+                }
+                //Converting the items to JustShopItem
+                val favList = favItemsFlow.map {
+                    it.toJustShopItem()
+                }
+                //updating the list in the UI State
+                updateFavourites(favList)
+            } catch (e: IOException) {
+                Log.e(TAG, "IOException $e")
+                updateViewStatus(isError = true)
+            } catch (e: HttpException) {
+                Log.e(TAG, "HttpException $e")
+                updateViewStatus(isError = true)
+            } catch (e: Exception) {
+                Log.e(TAG, "Exception::: $e")
+                updateViewStatus(isError = true)
+            }
+        }
     }
 
     /**
@@ -84,6 +119,9 @@ class JustShopViewModel(private val justShopItemsRepository: JustShopItemsReposi
                 updateViewStatus(isError = true)
             }
         }
+        Log.e(TAG, "loadFavItemsFromDB...")
+        //loading fav items from DB
+        loadFavItemsFromDB()
     }
 
 
@@ -129,14 +167,36 @@ class JustShopViewModel(private val justShopItemsRepository: JustShopItemsReposi
      */
     fun updateFavorites(justShopItem: JustShopItem) {
         val favourites = _uiState.value.favourites.toMutableList()
+        var isAdd = true
         if (isFavourite(justShopItem.id)) {
+            isAdd = false
             favourites.remove(justShopItem)
         } else {
             favourites.add(justShopItem)
         }
         updateFavourites(favourites)
+
+        viewModelScope.launch {
+            if (isAdd) {
+                saveFavLocally(justShopItem)
+            } else {
+                removeFavLocally(justShopItem)
+            }
+        }
     }
 
+    private suspend fun saveFavLocally(justShopItem: JustShopItem) {
+        viewModelScope.launch {
+            localFavItemsRepository.insertItem(justShopItem.toFavItem())
+        }
+    }
+
+
+    private suspend fun removeFavLocally(justShopItem: JustShopItem) {
+        viewModelScope.launch {
+            localFavItemsRepository.deleteItem(justShopItem.toFavItem())
+        }
+    }
 
     /**
      * Check whether favourite or not
@@ -151,14 +211,13 @@ class JustShopViewModel(private val justShopItemsRepository: JustShopItemsReposi
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val app = this[APPLICATION_KEY]
-                if (app == null) {
-                    JustShopViewModel(justShopItemsRepository = DefaultAppContainer().justShopItemsRepository)
-                } else {
-                    val application = (app as JustShopApplication)
-                    val justShopItemsRepository = application.container.justShopItemsRepository
-                    JustShopViewModel(justShopItemsRepository = justShopItemsRepository)
-                }
+                val application = (this[APPLICATION_KEY] as JustShopApplication)
+                val justShopItemsRepository = application.container.justShopItemsRepository
+                val favItemsRepository = application.container.localDbItemsRepository
+                JustShopViewModel(
+                    justShopItemsRepository = justShopItemsRepository,
+                    localFavItemsRepository = favItemsRepository
+                )
             }
         }
     }
